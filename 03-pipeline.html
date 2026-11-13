@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>FaxBridge — pipeline</title>
+    <style>
+      :root { --paper: #f4efe4; --ink: #17150f; --red: #a92c1f; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background: var(--paper); color: var(--ink);
+        font-family: Georgia, 'Times New Roman', serif;
+        display: grid; place-items: center; overflow: hidden;
+      }
+      main { width: 1160px; }
+      .kicker { font: 500 13px/1 'Courier New', monospace; letter-spacing: 0.28em; text-transform: uppercase; color: #6d6557; margin-bottom: 34px; }
+      h2 { font-size: 58px; line-height: 1.08; margin: 0 0 40px; font-weight: 400; letter-spacing: -0.02em; }
+      .flow { display: flex; align-items: stretch; gap: 0; margin: 0 0 46px; }
+      .step {
+        flex: 1; border: 1px solid rgba(23, 21, 15, 0.3); padding: 22px 18px 24px;
+        background: rgba(255, 255, 255, 0.32);
+      }
+      .step + .step { border-left: 0; }
+      .step span { display: block; font: 700 11px/1 'Courier New', monospace; letter-spacing: 0.18em; color: var(--red); margin-bottom: 14px; }
+      .step b { display: block; font-size: 26px; font-weight: 400; margin-bottom: 10px; }
+      .step small { font: 13px/1.5 'Courier New', monospace; color: #56503f; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+      .card { border-top: 2px solid var(--ink); padding-top: 18px; }
+      .card b { font-weight: 400; font-size: 24px; display: block; margin-bottom: 8px; }
+      .card p { margin: 0; font-size: 21px; line-height: 1.45; color: #3a352b; }
+      .card code { font: 15px 'Courier New', monospace; background: rgba(23, 21, 15, 0.07); padding: 2px 6px; }
+      .net { color: var(--red); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="kicker">02 · How it works</div>
+      <h2>One tab, no upload, no server.</h2>
+      <div class="flow">
+        <div class="step"><span>01</span><b>Ingest</b><small>image, or PDF<br />rasterised at 2×</small></div>
+        <div class="step"><span>02</span><b>Recognise</b><small>tesseract in a<br />web worker</small></div>
+        <div class="step"><span>03</span><b>Extract</b><small>labelled lines<br />beat guesses</small></div>
+        <div class="step"><span>04</span><b>Review</b><small>edit anything,<br />see the boxes</small></div>
+        <div class="step"><span>05</span><b>Hand off</b><small>JSON, CSV,<br />or a webhook</small></div>
+      </div>
+      <div class="row">
+        <div class="card">
+          <b>Nothing touches the network.</b>
+          <p>The image and the text stay in memory. There is no fetch on the ingest or OCR path — the only outbound call is the webhook the user types in.</p>
+        </div>
+        <div class="card">
+          <b>Confidence is the product.</b>
+          <p>Each value carries a score from 0 to 1, scaled by the page's median word confidence. Under 0.8 the field is flagged for a human.</p>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

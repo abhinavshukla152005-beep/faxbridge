@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>FaxBridge — problem</title>
+    <style>
+      :root { --paper: #f4efe4; --ink: #17150f; --red: #a92c1f; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background: var(--paper); color: var(--ink);
+        font-family: Georgia, 'Times New Roman', serif;
+        display: grid; place-items: center; overflow: hidden;
+      }
+      main { width: 1080px; }
+      .kicker { font: 500 13px/1 'Courier New', monospace; letter-spacing: 0.28em; text-transform: uppercase; color: #6d6557; margin-bottom: 34px; }
+      h2 { font-size: 64px; line-height: 1.06; margin: 0 0 44px; font-weight: 400; letter-spacing: -0.02em; }
+      ol { margin: 0; padding: 0; list-style: none; counter-reset: n; }
+      li {
+        counter-increment: n;
+        display: grid; grid-template-columns: 68px 1fr; gap: 22px;
+        padding: 26px 0; border-top: 1px solid rgba(23, 21, 15, 0.22);
+        font-size: 27px; line-height: 1.4; color: #2c2820;
+      }
+      li::before {
+        content: counter(n, decimal-leading-zero);
+        font: 700 15px/1 'Courier New', monospace; color: var(--red); padding-top: 8px;
+      }
+      li b { display: block; font-weight: 400; font-size: 31px; margin-bottom: 6px; }
+      .foot { margin-top: 40px; font: 12px/1.5 'Courier New', monospace; letter-spacing: 0.16em; text-transform: uppercase; color: #6d6557; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="kicker">01 · The problem</div>
+      <h2>The fax line is still a front door<br />to the medical record.</h2>
+      <ol>
+        <li><span><b>A page arrives as an image.</b>The referral, the lab result, the discharge summary — scanned paper, no text layer.</span></li>
+        <li><span><b>Someone retypes it.</b>Name, date of birth, MRN, sender, reason. The same eight fields, over and over.</span></li>
+        <li><span><b>The obvious fix is a cloud API.</b>Which uploads private medical information to a service the clinic has no relationship with.</span></li>
+      </ol>
+      <div class="foot">FaxBridge choice: do the reading locally, in the tab</div>
+    </main>
+  </body>
+</html>

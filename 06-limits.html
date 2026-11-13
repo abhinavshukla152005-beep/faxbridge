@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>FaxBridge — limits</title>
+    <style>
+      :root { --paper: #f4efe4; --ink: #17150f; --red: #a92c1f; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background: var(--paper); color: var(--ink);
+        font-family: Georgia, 'Times New Roman', serif;
+        display: grid; place-items: center; overflow: hidden;
+      }
+      main { width: 1120px; }
+      .kicker { font: 500 13px/1 'Courier New', monospace; letter-spacing: 0.28em; text-transform: uppercase; color: #6d6557; margin-bottom: 30px; }
+      h2 { font-size: 56px; line-height: 1.06; margin: 0 0 38px; font-weight: 400; letter-spacing: -0.02em; }
+      .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+      ul { margin: 0; padding: 0; list-style: none; }
+      li { padding: 15px 0; border-top: 1px solid rgba(23, 21, 15, 0.2); font-size: 21px; line-height: 1.4; color: #2c2820; }
+      li b { display: block; font-weight: 400; font-size: 24px; }
+      li span { color: #56503f; font-size: 18px; }
+      .links { border: 1px solid rgba(23, 21, 15, 0.3); padding: 26px 28px; background: rgba(255, 255, 255, 0.34); }
+      .links div { font: 15px/1.9 'Courier New', monospace; color: #2c2820; word-break: break-all; }
+      .links b { display: block; font: 700 11px/1 'Courier New', monospace; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); margin: 0 0 12px; }
+      .links div + b { margin-top: 22px; }
+      .stats { display: flex; gap: 40px; margin-top: 34px; }
+      .stat b { display: block; font: 400 44px/1 Georgia, serif; letter-spacing: -0.02em; }
+      .stat span { font: 12px/1.4 'Courier New', monospace; letter-spacing: 0.14em; text-transform: uppercase; color: #6d6557; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="kicker">05 · What it does not do</div>
+      <h2>Small on purpose.</h2>
+      <div class="cols">
+        <ul>
+          <li><b>Page one only.</b><span>Multi-page filings need fields joined across pages.</span></li>
+          <li><b>English only.</b><span>Hindi and Marathi are the next language packs.</span></li>
+          <li><b>No storage.</b><span>Close the tab and the record is gone — that is the privacy promise.</span></li>
+          <li><b>CORS-bound webhooks.</b><span>A browser cannot post where the server refuses; the UI says so.</span></li>
+        </ul>
+        <div>
+          <div class="links">
+            <b>Live demo</b>
+            <div>faxbridge-demo.web.app/?demo=1</div>
+            <b>Source</b>
+            <div>github.com — FaxBridge</div>
+            <b>Licence</b>
+            <div>MIT</div>
+          </div>
+          <div class="stats">
+            <div class="stat"><b>96%</b><span>median word confidence</span></div>
+            <div class="stat"><b>8/8</b><span>fields on the sample</span></div>
+            <div class="stat"><b>8</b><span>tests, 2 properties</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

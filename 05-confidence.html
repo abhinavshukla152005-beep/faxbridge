@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>FaxBridge — confidence</title>
+    <style>
+      :root { --paper: #f4efe4; --ink: #17150f; --red: #a92c1f; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background: var(--paper); color: var(--ink);
+        font-family: Georgia, 'Times New Roman', serif;
+        display: grid; place-items: center; overflow: hidden;
+      }
+      main { width: 1120px; }
+      .kicker { font: 500 13px/1 'Courier New', monospace; letter-spacing: 0.28em; text-transform: uppercase; color: #6d6557; margin-bottom: 30px; }
+      h2 { font-size: 56px; line-height: 1.06; margin: 0 0 42px; font-weight: 400; letter-spacing: -0.02em; }
+      .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 54px; }
+      h3 { font: 700 12px/1 'Courier New', monospace; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin: 0 0 18px; }
+      .bar { display: grid; grid-template-columns: 1fr 74px; align-items: center; gap: 14px; margin-bottom: 12px; }
+      .bar span { font: 14px/1 'Courier New', monospace; color: #3a352b; }
+      .track { height: 28px; background: rgba(23, 21, 15, 0.08); position: relative; }
+      .track i { position: absolute; inset: 0 auto 0 0; background: #17150f; }
+      .track i.low { background: var(--red); }
+      .bar b { font: 700 14px/1 'Courier New', monospace; text-align: right; }
+      .amb { border: 1px solid rgba(23, 21, 15, 0.3); padding: 26px 28px; background: rgba(255, 255, 255, 0.34); }
+      .amb .date { font: 42px/1 'Courier New', monospace; margin-bottom: 8px; letter-spacing: -0.02em; }
+      .amb .q { font-size: 23px; color: #3a352b; line-height: 1.45; margin: 12px 0 18px; }
+      .amb .flag {
+        display: inline-block; border: 1px solid var(--red); color: var(--red);
+        font: 700 11px/1 'Courier New', monospace; letter-spacing: 0.14em; text-transform: uppercase; padding: 8px 10px;
+      }
+      .amb .out { margin-top: 18px; font: 15px/1.6 'Courier New', monospace; color: #56503f; }
+      .rule { margin-top: 34px; font-size: 21px; color: #2c2820; border-top: 2px solid var(--ink); padding-top: 20px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="kicker">04 · The one place a guess would be invisible</div>
+      <h2>It flags what it is unsure about,<br />instead of rounding it up.</h2>
+      <div class="cols">
+        <div>
+          <h3>Base score by evidence</h3>
+          <div class="bar"><div class="track"><i style="width: 92%"></i></div><b>0.92</b></div>
+          <div class="bar"><span>labelled — “Patient: …”</span><span></span></div>
+          <div class="bar"><div class="track"><i style="width: 55%"></i></div><b>0.55</b></div>
+          <div class="bar"><span>bare date anywhere</span><span></span></div>
+          <div class="bar"><div class="track"><i style="width: 50%"></i></div><b>0.50</b></div>
+          <div class="bar"><span>bare phone number</span><span></span></div>
+          <div class="bar" style="margin-top: 22px"><div class="track"><i class="low" style="width: 70%"></i></div><b>0.70</b></div>
+          <div class="bar"><span>ambiguous date, after the penalty</span><span></span></div>
+          <p style="font: 15px/1.6 'Courier New', monospace; color: #56503f; margin-top: 22px">
+            every score × page median word confidence
+          </p>
+        </div>
+        <div class="amb">
+          <h3>The example that drove the design</h3>
+          <div class="date">DOB: 05/06/1980</div>
+          <div class="q">5 June, or 6 May? The fax does not say, and the answer differs by country.</div>
+          <div class="flag">review · 70%</div>
+          <div class="out">resolved day-first → 1980-06-05<br />flagged, never silently accepted</div>
+        </div>
+      </div>
+      <div class="rule">Under 0.8: a review badge. A date that cannot exist: nothing at all, not the nearest legal date.</div>
+    </main>
+  </body>
+</html>

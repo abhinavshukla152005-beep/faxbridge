@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>FaxBridge — intro</title>
+    <style>
+      :root { --paper: #f4efe4; --ink: #17150f; --red: #a92c1f; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Georgia, 'Times New Roman', serif;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+      body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(0deg, rgba(23, 21, 15, 0.045) 0 1px, transparent 1px 4px);
+        pointer-events: none;
+      }
+      main { width: 1060px; }
+      .kicker {
+        font: 500 13px/1 'Courier New', monospace;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: #6d6557;
+        margin-bottom: 28px;
+      }
+      h1 { font-size: 132px; line-height: 0.92; margin: 0 0 26px; letter-spacing: -0.03em; font-weight: 400; }
+      h1 em { font-style: normal; color: var(--red); }
+      p { font-size: 30px; line-height: 1.45; margin: 0; color: #3a352b; max-width: 900px; }
+      .rule { height: 2px; background: var(--ink); margin: 40px 0 26px; }
+      .meta { display: flex; gap: 34px; font: 12px/1.4 'Courier New', monospace; letter-spacing: 0.16em; text-transform: uppercase; color: #6d6557; }
+      .stamp {
+        position: fixed; top: 58px; right: 64px;
+        border: 3px solid var(--red); color: var(--red);
+        padding: 10px 18px; transform: rotate(4deg);
+        font: 700 15px/1.1 'Courier New', monospace; letter-spacing: 0.2em; text-align: center;
+      }
+      .stamp small { display: block; font-size: 10px; letter-spacing: 0.14em; margin-top: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="stamp">RECEIVED<small>13/11/2026</small></div>
+    <main>
+      <div class="kicker">A Kiroween 2026 build · Frankenstein</div>
+      <h1>Fax<em>Bridge</em></h1>
+      <div class="rule"></div>
+      <p>
+        Fax intake that reads the page in your browser and never uploads it.
+        Eight fields, a confidence score on each, and a review flag wherever the
+        machine is guessing.
+      </p>
+      <div class="meta" style="margin-top: 40px">
+        <span>Tesseract · pdf.js · React</span><span>Spec-driven with Kiro</span><span>MIT</span>
+      </div>
+    </main>
+  </body>
+</html>

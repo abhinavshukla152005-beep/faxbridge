@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Guard the extraction rules",
+  "description": "extract.ts is the only module where a wrong answer becomes a wrong patient record. Touching it forces the parser suite and a confidence check.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/lib/extract.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "src/lib/extract.ts changed. Run `npx vitest run src/lib/extract.test.ts`, then check the diff against R3 in .kiro/specs/faxbridge/requirements.md: does any confidence prior move, does any ambiguous date get silently resolved, and is every new rule covered by a test? Report findings in three bullets."
+  }
+}

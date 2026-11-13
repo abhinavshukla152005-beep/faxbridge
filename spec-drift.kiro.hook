@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Keep tasks.md honest",
+  "description": "A spec that lists finished work as pending is worse than no spec. When requirements change, check the task list still matches reality.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [".kiro/specs/faxbridge/requirements.md"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "requirements.md changed. Compare it with .kiro/specs/faxbridge/tasks.md and the current src/ tree. List requirements that no task covers and tasks marked complete that the code does not actually implement. Do not edit files; report only."
+  }
+}

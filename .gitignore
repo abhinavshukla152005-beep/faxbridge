@@ -1,0 +1,12 @@
+node_modules
+dist
+*.local
+.dev.log
+shot*.png
+eng.traineddata
+.firebase
+video/out
+video/.profile
+video/.probe-profile
+
+video/fonts

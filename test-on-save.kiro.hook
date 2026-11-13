@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Run tests when source changes",
+  "description": "Parsing regressions are silent until a fax is misread. This keeps the Vitest + fast-check suite running on every save.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["src/lib/*.ts", "src/lib/*.tsx", "src/components/*.tsx", "src/App.tsx"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npx vitest run"
+  }
+}

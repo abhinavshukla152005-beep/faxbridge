@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fax machines still run clinics — FaxBridge</title>
+    <meta
+      name="description"
+      content="A browser-only fax reader for clinic intake: Tesseract in a worker, a scored parser, and a review flag wherever the machine is guessing."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      :root {
+        --paper: #f4efe4;
+        --ink: #17150f;
+        --red: #a92c1f;
+        --dim: #6d6557;
+        --rule: rgba(23, 21, 15, 0.2);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 19px;
+        line-height: 1.62;
+      }
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(0deg, rgba(23, 21, 15, 0.03) 0 1px, transparent 1px 4px);
+        pointer-events: none;
+      }
+      main { position: relative; max-width: 760px; margin: 0 auto; padding: 72px 28px 96px; }
+      a { color: var(--red); }
+      .kicker {
+        font: 500 12px/1 'Courier New', monospace;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--dim);
+        margin-bottom: 26px;
+      }
+      h1 { font-size: 54px; line-height: 1.04; letter-spacing: -0.02em; font-weight: 400; margin: 0 0 22px; }
+      h2 { font-size: 30px; line-height: 1.2; font-weight: 400; margin: 52px 0 16px; letter-spacing: -0.01em; }
+      h3 { font: 700 12px/1 'Courier New', monospace; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red); margin: 34px 0 10px; }
+      p { margin: 0 0 18px; }
+      ul, ol { margin: 0 0 20px; padding-left: 22px; }
+      li { margin-bottom: 8px; }
+      code { font: 0.86em 'Courier New', monospace; background: rgba(23, 21, 15, 0.07); padding: 2px 5px; }
+      figure { margin: 32px 0; }
+      figure img { width: 100%; display: block; border: 1px solid var(--rule); }
+      figcaption { font: 12px/1.5 'Courier New', monospace; letter-spacing: 0.06em; color: var(--dim); margin-top: 10px; }
+      .pipeline {
+        background: #17150f;
+        color: #efe9db;
+        font: 14px/1.8 'Courier New', monospace;
+        padding: 22px 24px;
+        overflow-x: auto;
+      }
+      table { width: 100%; border-collapse: collapse; margin: 18px 0 24px; font-size: 0.92em; }
+      th, td { text-align: left; padding: 10px 12px 10px 0; border-top: 1px solid var(--rule); vertical-align: top; }
+      th { font: 700 11px/1.4 'Courier New', monospace; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+      blockquote {
+        margin: 26px 0;
+        padding: 2px 0 2px 20px;
+        border-left: 3px solid var(--red);
+        font-style: italic;
+        color: #3a352b;
+      }
+      .end {
+        margin-top: 56px;
+        padding-top: 22px;
+        border-top: 2px solid var(--ink);
+        font: 13px/1.8 'Courier New', monospace;
+        letter-spacing: 0.06em;
+        color: var(--dim);
+      }
+      .wordmark { font-size: 22px; text-decoration: none; color: var(--ink); }
+      .wordmark em { color: var(--red); font-style: normal; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a class="wordmark" href="/">Fax<em>Bridge</em></a>
+      <div class="kicker" style="margin-top: 40px">Kiroween 2026 · Frankenstein category</div>
+      <h1>Fax machines still run clinics. I built a reader that never uploads the page.</h1>
+
+      <p>
+        Plenty of clinics still run on a fax line. A referral arrives as a scanned sheet, someone
+        reads it, and someone retypes it into the EMR: name, date of birth, MRN, who sent it, why.
+        It is the same eight fields, over and over, and the page itself is a photograph of private
+        medical information.
+      </p>
+      <p>
+        The obvious build is “upload a PDF, run it through a cloud API”. I did not want that. A fax
+        is the one document where the person handling it has the least authority to send it
+        somewhere new.
+      </p>
+      <p>
+        So FaxBridge runs the whole thing in the tab: the OCR engine, the parser, the review screen,
+        the export. Close the tab and nothing is left anywhere — not on a server, not in a database,
+        not in a log.
+      </p>
+
+      <figure>
+        <img src="/blog/result.png" alt="FaxBridge with a referral fax on the left and eight extracted fields on the right" />
+        <figcaption>The sample referral: 8/8 fields, 96% median word confidence, two ambiguous dates flagged for review.</figcaption>
+      </figure>
+
+      <h2>What it produces</h2>
+      <p>
+        Eight fields come back per fax: patient name, date of birth, patient ID, fax date, sender,
+        recipient, phone, and reason for referral. Each one carries a confidence score and can be
+        edited before export. Then it leaves as JSON, CSV, or a POST to a webhook you supply.
+      </p>
+      <p>
+        The number I care about is not “accuracy”. It is how often the tool says
+        <em>“I am not sure”</em> instead of guessing.
+      </p>
+
+      <h2>The pipeline</h2>
+      <div class="pipeline">file ──► pdf rasteriser ──► tesseract worker ──► field parser ──► review ──► export</div>
+      <p style="margin-top: 22px">
+        <strong>Ingest.</strong> Images go straight in. PDFs are rasterised at 2× on page 1 with
+        pdf.js, because a 150 dpi fax scan that has already been through a fax codec is not
+        something an OCR model can be picky about.
+      </p>
+      <p>
+        <strong>Recognise.</strong> Tesseract runs in a Web Worker. Every word comes back with a
+        bounding box, and the UI draws those boxes over the scan so you can see what the machine
+        actually read — which matters more than any percentage.
+      </p>
+      <p><strong>Extract.</strong> The parser works on lines, not on the whole page:</p>
+      <ul>
+        <li><code>Patient: Anita Sharma</code> — labelled match, base score 0.92</li>
+        <li>a bare date anywhere on the page — generic match, 0.55</li>
+        <li>a bare 10-digit number — 0.50</li>
+      </ul>
+      <p>
+        Those bases are then multiplied by the page’s median word confidence, clamped so a terrible
+        scan cannot drag a labelled match to zero. The result is one number per field that means
+        roughly what it says: how much of this value came from a label, and how well did the page
+        read.
+      </p>
+      <p>
+        <strong>Review.</strong> Anything under 0.8 is flagged. Nothing is silently overwritten.
+      </p>
+
+      <h2>The trap I nearly shipped</h2>
+      <p><code>DOB: 05/06/1980</code>.</p>
+      <p>
+        Is that 5 June or 6 May? The fax does not say. In the US it is May 6th; in India it is the
+        5th of June. If the tool is 90% confident either way, the first wrong record looks exactly
+        like a right one.
+      </p>
+      <p>
+        So ambiguous slash dates resolve day-first, get scored 0.70 and carry a review badge. A
+        date that cannot exist (<code>31/02/1990</code>) resolves to nothing at all rather than the
+        closest legal date. It is the one place where a “smart” guess would be invisible to the
+        person signing off on the record, so the tool refuses to make it.
+      </p>
+      <p>That rule did not come from me being careful. It came from writing the requirement down before the code.</p>
+
+      <h2>What Kiro actually changed</h2>
+      <p>
+        I used Kiro as the spec layer, not as an autocomplete. Everything specific to it sits in
+        <code>.kiro/</code> and is committed, because a hackathon repo where the AI tooling is
+        invisible is not much of a demonstration.
+      </p>
+      <table>
+        <tr><th>Kiro feature</th><th>What it did here</th></tr>
+        <tr>
+          <td>Specs</td>
+          <td>
+            R1–R7 in EARS form, written before the code, with the design and task list derived from
+            them. Writing R3.3 — “an ambiguous date must be flagged, never silently resolved” —
+            forced the day-first decision above into the open.
+          </td>
+        </tr>
+        <tr>
+          <td>Steering</td>
+          <td>
+            Product, tech and structure rules. The product file holds the non-negotiables: local by
+            default, show uncertainty, no silent date guessing, one page only.
+          </td>
+        </tr>
+        <tr>
+          <td>Hooks</td>
+          <td>
+            <code>test-on-save</code> runs the suite on any source edit; <code>parser-guard</code>
+            asks for a review of <code>extract.ts</code> against R3, because that is the file where
+            a tidy-up can quietly change a score; <code>spec-drift</code> reconciles the task list.
+          </td>
+        </tr>
+        <tr>
+          <td>Agents</td>
+          <td>
+            <code>ocr-reviewer</code> checks extraction changes against R3. <code>privacy-auditor</code>
+            looks for anything that moves fax content off the device — a fetch, a form post, an
+            analytics call, a CDN that sees the image.
+          </td>
+        </tr>
+        <tr>
+          <td>MCP</td>
+          <td>
+            A dependency-free stdio server with <code>normalize_date</code> and
+            <code>validate_record</code>, so date behaviour could be checked inside the agent loop
+            instead of a scratch file.
+          </td>
+        </tr>
+        <tr>
+          <td>PBT</td>
+          <td>
+            Two fast-check properties: every valid calendar day survives a write-then-read round
+            trip, and the phone normaliser refuses anything shorter than seven digits.
+          </td>
+        </tr>
+      </table>
+
+      <h2>What broke</h2>
+      <p>
+        Tesseract.js v7 does not return word data by default. My first build showed correct field
+        values with every confidence at 51% and a 0% page score, because <code>data.blocks</code>
+        was <code>undefined</code> and the confidence chain multiplied by nothing. The fix is one
+        argument — <code>recognize(canvas, {}, { blocks: true })</code> — but the bug was invisible
+        in the UI: the values looked right, so the percentages looked like tesseract being
+        pessimistic rather than the tool being broken.
+      </p>
+      <p>
+        A tool whose entire promise is calibrated uncertainty has to treat a confidence bug as a
+        correctness bug. The lesson went into the code as a comment and into the steering file as a
+        rule.
+      </p>
+
+      <h2>Numbers, honestly</h2>
+      <p>
+        On the bundled sample referral: 82 words read, 96% median word confidence, 8/8 fields
+        extracted, about 4.5 seconds warm in a desktop browser. Two fields are flagged for review,
+        both ambiguous slash dates, which is the system working rather than failing.
+      </p>
+
+      <h2>What it does not do</h2>
+      <ul>
+        <li><strong>Page 1 only.</strong> Multi-page filings need fields joined across pages.</li>
+        <li><strong>English only.</strong> Hindi and Marathi are the next language packs.</li>
+        <li><strong>No storage.</strong> Closing the tab loses the record. That is the privacy promise.</li>
+        <li><strong>CORS-bound webhooks.</strong> A browser cannot POST to a server that does not allow it, so the UI says so instead of failing silently.</li>
+      </ul>
+      <p>
+        The interesting part of this build was not the OCR. It was deciding, in writing and before
+        the code, that the tool should sometimes refuse to answer.
+      </p>
+
+      <div class="end">
+        TRY IT · <a href="/?demo=1">faxbridge-demo.web.app/?demo=1</a><br />
+        SOURCE · MIT · repository linked from the Devpost entry<br />
+        RUNS ENTIRELY IN THE TAB
+      </div>
+    </main>
+  </body>
+</html>

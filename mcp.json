@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "fax-tools": {
+      "command": "node",
+      "args": ["mcp/fax-tools/server.mjs"],
+      "disabled": false,
+      "autoApprove": ["normalize_date", "validate_record"],
+      "description": "Date normalisation and record validation used while building the extractor."
+    }
+  }
+}
