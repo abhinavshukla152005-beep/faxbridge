@@ -2,6 +2,13 @@
 
 Everything below is paste-ready.
 
+> **Status, 2026-11-14: draft, not submitted.** Kiroween scores Kiro usage and
+> the entry form asks for a Kiro user ID. Kiro was not used to build this — the
+> `.kiro/` files are written in Kiro's format and were produced with an AI coding
+> agent. The copy below says so plainly. Submitting waits until the project has
+> actually been run through Kiro; otherwise the entry would be claiming work that
+> did not happen.
+
 ---
 
 ## Name
@@ -66,31 +73,30 @@ not pick May 6th or June 5th and move on. It resolves day-first, scores the fiel
 - **Vitest + fast-check** for the date and phone normalisers, including a
   property that every valid calendar day survives a write-then-read round trip.
 
-## How I used Kiro
+## The spec layer
 
-Kiro was the spec layer, not an autocomplete. Everything Kiro-specific is
-committed in [`.kiro/`](.kiro/):
+The requirements were written before the code. Everything Kiro-specific is
+committed in [`.kiro/`](.kiro/), in Kiro's file format — produced with an AI
+coding agent during the build; Kiro itself was not used.
 
-- **Spec-driven development** — `.kiro/specs/faxbridge/requirements.md` holds
-  R1–R7 in EARS form, with design and tasks derived from them. Requirement R3.3
-  ("an ambiguous date must be flagged, never silently resolved") is the reason
-  the ambiguity rule exists at all. Writing it down before the code forced the
-  question the tool would otherwise answer by accident.
+- **Spec** — `.kiro/specs/faxbridge/requirements.md` holds R1–R7 in EARS form,
+  with design and tasks derived from them. Requirement R3.3 ("an ambiguous date
+  must be flagged, never silently resolved") is the reason the ambiguity rule
+  exists at all. Writing it down before the code forced the question the tool
+  would otherwise have answered by accident.
 - **Steering** — `.kiro/steering/{product,tech,structure}.md`. Product holds the
   non-negotiables: local by default, show uncertainty, no silent date guessing.
   Tech records the two tesseract rules that cost me a debugging session.
-- **Agent hooks** — `.kiro/hooks/`: `test-on-save` runs the suite on any source
-  edit; `parser-guard` asks the agent to review `extract.ts` against R3 because
-  that is the file where a tidy-up can silently change a score; `spec-drift`
-  reconciles `tasks.md` when the requirements change.
-- **Custom agents** — `.kiro/agents/ocr-reviewer.json` reviews extraction
-  changes against R3. `privacy-auditor.json` looks for anything that moves fax
-  content off-device: a fetch, a form post, an analytics call, a CDN that sees
-  the image.
+- **Hooks** — `.kiro/hooks/`: `test-on-save` for the suite on any source edit,
+  `parser-guard` for reviewing `extract.ts` against R3 — the file where a
+  tidy-up can silently change a score — and `spec-drift` for reconciling
+  `tasks.md` when the requirements change.
+- **Agents** — `.kiro/agents/ocr-reviewer.json` for extraction changes against
+  R3. `privacy-auditor.json` for anything that moves fax content off-device: a
+  fetch, a form post, an analytics call, a CDN that sees the image.
 - **MCP** — `mcp/fax-tools/server.mjs`, a dependency-free stdio server with
   `normalize_date` and `validate_record`, registered in
-  `.kiro/settings/mcp.json`, so date behaviour could be checked inside the agent
-  loop instead of a scratch file.
+  `.kiro/settings/mcp.json`.
 - **Property-based testing** — fast-check properties over the normalisers.
 
 ## Challenges
@@ -131,5 +137,5 @@ those decisions visible a few hours later.
 
 ## Built with
 
-react, typescript, vite, tesseract.js, pdf.js, vitest, fast-check, kiro, mcp,
+react, typescript, vite, tesseract.js, pdf.js, vitest, fast-check,
 firebase-hosting
