@@ -51,22 +51,24 @@ file ──► pdf rasteriser ──► tesseract worker ──► parser ──
    resolved day-first, scored 0.70 and flagged — never silently guessed.
 5. **Hand off.** Copy JSON, download JSON/CSV, or POST to a webhook you supply.
 
-## How Kiro was used
+## The Kiro-format artifacts
 
-Everything Kiro-specific lives in [`.kiro/`](.kiro/) and is intentionally committed.
+Everything under [`.kiro/`](.kiro/) is written in Kiro's file format and is
+intentionally committed. It was produced with an AI coding agent during the
+build; Kiro itself was not the tool used, so nothing here claims a Kiro run.
 
-| Kiro feature | Where | What it did |
+| Artifact | Where | What it holds |
 | --- | --- | --- |
-| Spec-driven development | `.kiro/specs/faxbridge/` | Requirements (R1–R7) written before code; design and tasks derived from them |
-| Steering | `.kiro/steering/` | Product, tech and structure rules; the "never hide a guess" rule shaped the confidence model |
-| Agent hooks | `.kiro/hooks/` | `npm test` on every source edit; a parser review prompt that fires when `extract.ts` changes; a spec-drift check |
-| Custom agents | `.kiro/agents/` | `ocr-reviewer` (checks extraction diffs against R3) and `privacy-auditor` (hunts for anything that moves fax content off-device) |
-| MCP | `mcp/fax-tools/server.mjs` | `normalize_date` and `validate_record`, so date behaviour could be checked mid-build instead of in a scratch file |
-| Property-based testing | `src/lib/extract.test.ts` | Date round-trip across every valid day; phone normaliser rejects short input |
+| Spec | `.kiro/specs/faxbridge/` | Requirements R1–R7 in EARS form, the design derived from them, and the task checklist |
+| Steering | `.kiro/steering/` | Product rules (local by default, show uncertainty, no silent date guessing), tech stack, module structure |
+| Hooks | `.kiro/hooks/` | `test-on-save` (run the suite on a source edit), `parser-guard` (review `extract.ts` against R3), `spec-drift` (reconcile the task list) |
+| Agents | `.kiro/agents/` | `ocr-reviewer` (extraction diffs against R3) and `privacy-auditor` (anything that moves fax content off-device) |
+| MCP | `mcp/fax-tools/server.mjs` | `normalize_date` and `validate_record` as a dependency-free stdio server |
+| Tests | `src/lib/extract.test.ts` | Date round-trip across every valid day; phone normaliser rejects short input |
 
-The spec was the reason the ambiguity rule exists: writing R3.3 down forced the
-question "what does `05/06` actually mean here", which is the one place this tool
-could quietly produce a wrong record.
+The spec is the part that mattered: writing R3.3 down — "an ambiguous date must
+be flagged, never silently resolved" — forced the question `05/06` would
+otherwise have answered by accident.
 
 ## Tests
 
