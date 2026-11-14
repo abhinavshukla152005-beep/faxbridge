@@ -69,11 +69,12 @@ it.
 That rule did not come from me being careful. It came from writing the
 requirement down before the code.
 
-## What Kiro actually changed
+## What the spec artifacts changed
 
-I used Kiro as the spec layer, not as an autocomplete. Everything specific to it
-sits in `.kiro/` and is committed, because a hackathon repo where the AI tooling
-is invisible is not much of a demonstration.
+Everything in `.kiro/` is committed, because a project where the design record
+is invisible is not much of a demonstration. These files are written in Kiro's
+format and were produced with an AI coding agent during the build; Kiro itself
+was not part of it.
 
 **Specs first.** `.kiro/specs/faxbridge/requirements.md` holds R1–R7 in EARS
 form: ingest, recognise, extract, review, hand-off, privacy, demo. The design
@@ -85,10 +86,10 @@ build that decision would have been made once, in passing, and never recorded.
 
 **Steering.** Three files in `.kiro/steering/` — product, tech, structure. The
 product one holds the non-negotiables: local by default, show uncertainty, no
-silent date guessing, one page only. Because they are in the repo, they apply to
-every later edit rather than to whichever session happened to remember them.
+silent date guessing, one page only. Because they live in the repo, they are
+there for every later edit rather than buried in a chat log.
 
-**Hooks.** `.kiro/hooks/` carries three:
+**Hooks.** `.kiro/hooks/` carries three hook definitions:
 
 | Hook | Trigger | Action |
 | --- | --- | --- |
@@ -96,26 +97,25 @@ every later edit rather than to whichever session happened to remember them.
 | `parser-guard` | `src/lib/extract.ts` is edited | asks the agent to review the diff against R3 |
 | `spec-drift` | `requirements.md` is edited | asks the agent to reconcile `tasks.md` |
 
-The parser guard is the useful one. `extract.ts` is the file where a small tidy
-up can quietly change a confidence score, and nothing else in the project
-notices. The hook makes that file the one place where a change has to be
-justified.
+The parser guard is the one worth keeping. `extract.ts` is the file where a
+small tidy-up can quietly change a confidence score, and nothing else in the
+project notices — so it is written down as the one place where a change has to
+be justified.
 
-**Custom agents.** `.kiro/agents/ocr-reviewer.json` checks extraction changes
-against R3. `.kiro/agents/privacy-auditor.json` has one job: find anything that
-moves fax content off the device — a `fetch`, a form post, an analytics call, a
-CDN that sees the image. It is scoped to the export path and the webhook, which
-are the only two places content could leave.
+**Custom agents.** `.kiro/agents/ocr-reviewer.json` is written to check
+extraction changes against R3. `.kiro/agents/privacy-auditor.json` has one job:
+find anything that moves fax content off the device — a `fetch`, a form post, an
+analytics call, a CDN that sees the image. Both are scoped to the export path and
+the webhook, which are the only two places content could leave.
 
 **MCP.** `mcp/fax-tools/server.mjs` is a dependency-free stdio server exposing
-`normalize_date` and `validate_record`, registered in `.kiro/settings/mcp.json`.
-It exists so date behaviour could be checked inside the agent loop instead of in
-a scratch file I would forget to delete.
+`normalize_date` and `validate_record`, registered in `.kiro/settings/mcp.json`,
+so date behaviour could be checked outside a scratch file I would forget to
+delete.
 
 **Property-based testing.** Two fast-check properties cover the parsers: every
 valid calendar day survives a write-then-read round trip, and the phone
-normaliser refuses anything shorter than seven digits. Eight tests total, and
-they run on every save thanks to the hook.
+normaliser refuses anything shorter than seven digits. Eight tests total.
 
 ## What broke
 
