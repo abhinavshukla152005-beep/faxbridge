@@ -1,7 +1,6 @@
 # Devpost submission copy — FaxBridge
 
-Everything below is paste-ready. Links marked `<TODO>` are the two things only
-you can create (public GitHub repo, YouTube video).
+Everything below is paste-ready.
 
 ---
 
@@ -22,8 +21,8 @@ webhook.
 ## Links
 
 - Live app: https://faxbridge-demo.web.app/?demo=1
-- Source: `<TODO: https://github.com/<you>/faxbridge>`
-- Demo video: `<TODO: https://youtu.be/...>` (encoded copy in `video/faxbridge-demo.mp4`, 1:50)
+- Source: https://github.com/abhinavshukla152005-beep/faxbridge
+- Demo video: https://abhinavshukla152005-beep.github.io/faxbridge/video/faxbridge-demo.mp4 (1:50, no narration)
 - Blog post: https://faxbridge-demo.web.app/blog/
 
 ## Inspiration
