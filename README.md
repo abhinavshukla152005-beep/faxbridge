@@ -8,7 +8,9 @@ name, date of birth, patient ID, fax date, sender, recipient, phone and reason â
 with a confidence score on each one. The document never leaves the tab.
 
 Built for **Kiroween 2026**, Frankenstein category: paper-era fax stitched to a
-browser OCR engine, a parser and a webhook.
+browser OCR engine, a parser and a webhook. The `.kiro/` spec artifacts are in
+the repo; Kiro itself was not used to build it â€” see
+[the note below](#the-kiro-format-artifacts).
 
 ## Try it
 
